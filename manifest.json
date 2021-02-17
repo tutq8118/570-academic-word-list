@@ -1,0 +1,15 @@
+{
+  "manifest_version": 2,
+  "name": "570 Academic Word List",
+  "description": "Revising 570 academic word list each time opening a new Chrome tab.",
+  "version": "0.0.1",
+  "icons": {
+    "16": "/public/avatar.png",
+    "48": "/public/avatar.png",
+    "128": "/public/avatar.png"
+  },
+  "homepage_url": "https://570awl.netlify.app/",
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  }
+}
