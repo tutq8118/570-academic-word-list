@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Settings of 570 Academic Word List</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' data: https://fonts.googleapis.com 'unsafe-inline' 'unsafe-eval'"
+    />
+    <link rel="stylesheet" href="./public/style.css" />
+  </head>
+  <body>
+    <div class="academic__settings">
+      <h1>Settings</h1>
+        <form action="" id="settings-form" class="academic__form">
+          <div class="form-group">
+            <label for="">
+              Sublist
+            </label>
+            <select name="" id="sublist-selector" class="form-control form-select">
+              <option value=0>All</option>
+              <option value=1>1</option>
+              <option value=2>2</option>
+              <option value=3>3</option>
+              <option value=4>4</option>
+              <option value=5>5</option>
+              <option value=6>6</option>
+              <option value=7>7</option>
+              <option value=8>8</option>
+              <option value=9>9</option>
+              <option value=10>10</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="">Color</label>
+            <input type="color" value="#2dbe60" id="color-selector" class="form-control">
+          </div>
+          <button type="reset">Set as default</button>
+          <button type="submit">Save</button>
+        </form>
+    </div>
+    <script type="module" src="option.js"></script>
+  </body>
+</html>

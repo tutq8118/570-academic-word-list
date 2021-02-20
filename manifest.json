@@ -2,14 +2,17 @@
   "manifest_version": 2,
   "name": "570 Academic Word List",
   "description": "Revising 570 academic word list each time opening a new Chrome tab.",
-  "version": "0.0.1",
-  "icons": {
-    "16": "/public/avatar.png",
-    "48": "/public/avatar.png",
-    "128": "/public/avatar.png"
+  "version": "0.0.2",
+  "browser_action": {
+    "default_icon": {
+      "16": "/public/iconx16.png",
+      "48": "/public/iconx48.png",
+      "128": "/public/icon.png"
+    }
   },
-  "homepage_url": "https://570awl.netlify.app/",
+  "homepage_url": "https://chrome.google.com/webstore/detail/570-academic-word-list/jljehabaedafdnceghbogphpdllpnbhf?hl=en&authuser=1",
   "chrome_url_overrides": {
     "newtab": "index.html"
-  }
+  },
+  "options_page": "option.html"
 }

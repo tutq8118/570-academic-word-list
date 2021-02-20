@@ -13,6 +13,16 @@ const main = async () => {
     wordlist = await res.json();
     localStorage.ACADEMIC_WORDLIST = JSON.stringify(wordlist);
   }
+  const fullWordlist = JSON.parse(JSON.stringify(wordlist));
+  const settings = localStorage.ACADEMIC_WORDLIST_SETTINGS ? JSON.parse(localStorage.ACADEMIC_WORDLIST_SETTINGS) : {};
+  const sublistSelected = parseInt(settings.sublist) > 0 ? parseInt(settings.sublist) : 0;
+  const colorSelected = settings.color ? settings.color : "#2dbe60";
+
+  if (sublistSelected > 0) {
+    wordlist = fullWordlist.filter((e) => e.sublist === sublistSelected)
+  } else {
+    wordlist = fullWordlist;
+  }
 
   const randomize = () => {
     return Math.floor(Math.random() * wordlist.length);
@@ -44,7 +54,7 @@ const main = async () => {
           .map(
             (
               d
-            ) => `<p class="academic__meanings-definition"><strong>Definition: </strong><span>${
+            ) => `<p class="academic__meanings-definition" style="color: ${colorSelected}"><strong>Definition: </strong><span>${
               d.definition
             }</span></p>
             ${
@@ -68,10 +78,10 @@ const main = async () => {
 
   document.body.innerHTML = `
     <div class='academic__word'>
-      <h1 class='academic__word-main'>
+      <h1 class='academic__word-main' style="color: ${colorSelected}">
          &ldquo;${word}&rdquo;
       </h1>
-      <h4 class='academic__word-sub'><strong>Sublist:</strong> ${sublist}</h4>
+      <h4 class='academic__word-sub'><strong>Sublist:</strong> ${sublist} (${wordlist.filter((e) => e.sublist === sublist).length} words)</h4>
       <ul class="academic__phonetics">
         ${phoneticsHTML}
       </ul>

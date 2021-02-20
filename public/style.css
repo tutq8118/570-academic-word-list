@@ -107,3 +107,44 @@ ul {
 .academic__meanings-pos span {
   text-transform: capitalize;
 }
+
+.academic__settings {
+  margin-top: 5rem;
+}
+
+.academic__settings h1 {
+  text-align: center;
+  margin-bottom: 5rem;
+}
+
+.form-group {
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.form-group label {
+  margin-right: 1rem;
+}
+
+.form-control {
+  min-width: 100px;
+  min-height: 30px;
+}
+
+.form-select {
+  padding: 5px;
+}
+
+.academic__form button {
+  border: none;
+  border-radius: 5px;
+  height: 30px;
+  min-width: 120px;
+  color: #222;
+}
+
+.academic__form button:hover {
+  border: 1px solid #bdbdbd;
+}
