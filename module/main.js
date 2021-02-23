@@ -31,7 +31,8 @@ const main = async () => {
   };
 
   const inlineStyle = () => {
-    var css = `.academic__sublist ul:before {border-bottom-color: ${colorSelected};}`,
+    var css = `.academic__sublist ul:before {border-bottom-color: ${colorSelected};}
+    .academic__sublist.active header {color: ${colorSelected}}`,
     head = document.head || document.getElementsByTagName('head')[0],
     style = document.createElement('style');
     head.appendChild(style);

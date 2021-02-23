@@ -32,6 +32,7 @@ button {
   cursor: pointer;
 }
 
+audio:focus:not(:focus-visible),
 button:focus:not(:focus-visible) {
   outline: none;
 }
@@ -249,6 +250,8 @@ ul {
   border: none;
   padding: 0;
   margin-left: 15px;
+  color: inherit;
+  background: #fff;
 }
 
 .academic__sublist-btn.active .gg-list,
@@ -263,12 +266,18 @@ ul {
 /* SETTINGS  */
 
 .settings {
-  margin-top: 5rem;
+  width: 280px;
+  padding: 15px;
 }
 
 .settings h1 {
   text-align: center;
-  margin-bottom: 5rem;
+  margin-bottom: 2rem;
+  margin-top: 0;
+}
+
+.settings__form {
+  margin-bottom: 2rem;
 }
 
 .form-group {
