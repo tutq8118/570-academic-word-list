@@ -1,5 +1,8 @@
 const settings = async () => {
-  let settings = {};
+  let settings = {
+    color: "#2dbe60",
+    sublist: "0",
+  };
 
   if (localStorage.ACADEMIC_WORDLIST_SETTINGS) {
     settings = JSON.parse(localStorage.ACADEMIC_WORDLIST_SETTINGS);

@@ -15,8 +15,11 @@ const main = async () => {
     wordlist = await res.json();
     localStorage.ACADEMIC_WORDLIST = JSON.stringify(wordlist);
   }
-  const fullWordlist = JSON.parse(JSON.stringify(wordlist));
-  const settings = localStorage.ACADEMIC_WORDLIST_SETTINGS ? JSON.parse(localStorage.ACADEMIC_WORDLIST_SETTINGS) : {};
+  let fullWordlist = JSON.parse(JSON.stringify(wordlist));
+  const settings = localStorage.ACADEMIC_WORDLIST_SETTINGS ? JSON.parse(localStorage.ACADEMIC_WORDLIST_SETTINGS) : {
+    color: "#2dbe60",
+    sublist: "0",
+  };
   const sublistSelected = parseInt(settings.sublist) > 0 ? parseInt(settings.sublist) : 0;
   const colorSelected = settings.color ? settings.color : "#2dbe60";
 
@@ -27,7 +30,7 @@ const main = async () => {
   }
 
   const randomize = () => {
-    return Math.floor(Math.random() * wordlist.length);
+    return Math.floor(Math.random() * wordlist.filter((e) => e.disabled !== true).length);
   };
 
   const inlineStyle = () => {
@@ -44,7 +47,8 @@ const main = async () => {
     phonetics,
     meanings,
     sublist
-  } = wordlist[randomize()];
+  } = wordlist.filter((e) => e.disabled !== true)[randomize()];
+
 
   const renderData = (word, phonetics, meanings, sublist) => {
     const phoneticsHTML = phonetics
@@ -93,7 +97,7 @@ const main = async () => {
       )
       .join("");
 
-    const sublistHTML = wordlist.filter((e) => e.sublist === sublist).map((i) => `<li>${i.word}</li>`).join("");
+    const sublistHTML = wordlist.filter((e) => e.sublist === sublist).map((i) => `<li><input type='checkbox' title='Check to turn off the word on the Random' ${i.disabled ? 'checked' : '' } name='showOnRandom' class='academic__sublist-checkbox'></input><span>${i.word}</span></li>`).join("");
 
     document.body.innerHTML = `
     <div class='academic'>
@@ -120,11 +124,28 @@ const main = async () => {
   `;
 
     document.querySelectorAll('.academic__sublist li').forEach(item => {
-      item.addEventListener('click', function (e) {
+      item.children[1].addEventListener('click', function (e) {
         e.preventDefault();
         const text = this.innerText;
         const element = wordlist.find(i => i.word === text);
         renderData(element.word, element.phonetics, element.meanings, element.sublist);
+      });
+      item.children[0].addEventListener('change', function () {
+        const text = item.children[1].innerText;
+        console.log(this.checked);
+        fullWordlist = fullWordlist.map((e) => {
+          if (e.word === text) {
+            e.disabled = this.checked;
+            return e;
+          }
+          else {
+            return e;
+          }
+        });
+
+        console.log(fullWordlist[0]);
+
+        localStorage.ACADEMIC_WORDLIST = JSON.stringify(fullWordlist);
       });
     });
 

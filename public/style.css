@@ -103,7 +103,7 @@ ul {
  
  .gg-close-r::after {
   transform: rotate(-45deg)
- } 
+ }
 
 .academic {
   text-align: center;
@@ -229,6 +229,7 @@ ul {
 .academic__sublist li {
   cursor: pointer;
   margin-bottom: 5px;
+  display: flex;
 }
 
 .academic__sublist li:hover {
@@ -262,6 +263,11 @@ ul {
 .academic__sublist-btn.active .gg-close-r {
   display: block;
 }
+
+.academic__sublist-checkbox {
+  margin-right: .5rem;
+}
+
 
 /* SETTINGS  */
 
@@ -310,4 +316,26 @@ ul {
 
 .settings__form button:hover {
   border: 1px solid #bdbdbd;
+}
+
+/* SETTING OF LIST  */
+
+.settings-word-list__words {
+  column-count: 4;
+}
+
+.settings-word-list__words {
+  column-gap: 50px;
+}
+
+.settings-word-list__words li {
+  display: flex;
+}
+
+.settings-word-list__words li span {
+  flex-grow: 1;
+}
+
+.settings-word-list__words label {
+  margin-left: .5rem;
 }
