@@ -14,5 +14,8 @@
   "homepage_url": "https://chrome.google.com/webstore/detail/570-academic-word-list/jljehabaedafdnceghbogphpdllpnbhf?hl=en&authuser=1",
   "chrome_url_overrides": {
     "newtab": "index.html"
-  }
+  },
+  "permissions": [
+      "tabs"
+  ]
 }

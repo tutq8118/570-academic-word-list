@@ -1,5 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Special+Elite&display=swap");
 
+/* reset  */
+
 * {
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
@@ -41,6 +43,8 @@ ul {
   list-style: none;
   padding-left: 0;
 }
+
+/* CSS font  */
 
 .gg-list {
   box-sizing: border-box;
@@ -104,6 +108,132 @@ ul {
  .gg-close-r::after {
   transform: rotate(-45deg)
  }
+
+ .gg-check-r {
+  box-sizing: border-box;
+  position: relative;
+  display: block;
+  width: 22px;
+  height: 22px;
+  border: 2px solid;
+  transform: scale(var(--ggs,1));
+  border-radius: 4px
+ }
+ 
+ .gg-check-r::after {
+  content: "";
+  display: block;
+  box-sizing: border-box;
+  position: absolute;
+  left: 3px;
+  top: -1px;
+  width: 6px;
+  height: 10px;
+  border-width: 0 2px 2px 0;
+  border-style: solid;
+  transform-origin: bottom left;
+  transform: rotate(45deg)
+ } 
+
+ .gg-log-off {
+  box-sizing: border-box;
+  position: relative;
+  display: block;
+  border-radius: 16px;
+  border: 2px solid;
+  transform: scale(var(--ggs,1));
+  width: 22px;
+  height: 22px;
+  border-top: 2px solid transparent;
+ }
+ 
+ .gg-log-off::before {
+  content: "";
+  display: block;
+  box-sizing: border-box;
+  position: absolute;
+  border-radius: 3px;
+  height: 10px;
+  width: 2px;
+  background: currentColor;
+  left: 8px;
+  bottom: 10px;
+ } 
+
+ /* switch  */
+
+.switch {
+  display: inline-block;
+  position: relative;
+  width: 50px;
+  height: 25px;
+  border-radius: 20px;
+  background: #2c3238;
+  background: #2dbe60;
+  transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  vertical-align: middle;
+  cursor: pointer;
+  transform: scale(0.88);
+  opacity: .3;
+}
+.switch::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  background: #fafafa;
+  border-radius: 50%;
+  transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1), background 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.switch:active::before {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.28), 0 0 0 20px rgba(128,128,128,0.1);
+}
+input:checked + .switch {
+  background: #2dbe60;
+  opacity: 1;
+}
+input:checked + .switch::before {
+  left: 27px;
+  background: #fff;
+}
+input:checked + .switch:active::before {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.28), 0 0 0 20px rgba(0,150,136,0.2);
+}
+
+ /* tooltip  */
+
+ .tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 160px;
+  background-color: #2c3238;
+  color: #fff;
+  text-align: center;
+  padding: 5px;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  font-size: 13px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+.tooltip .tooltiptext {
+  width: 160px;
+  bottom: 150%;
+  left: 50%;
+  margin-left: -80px;
+}
+
+ /* MAIN  */
 
 .academic {
   text-align: center;
@@ -230,6 +360,7 @@ ul {
   cursor: pointer;
   margin-bottom: 5px;
   display: flex;
+  align-items: center;
 }
 
 .academic__sublist li:hover {
@@ -256,6 +387,7 @@ ul {
 }
 
 .academic__sublist-btn.active .gg-list,
+.academic__sublist-btn.active .tooltiptext--open,
 .academic__sublist-btn .gg-close-r {
   display: none;
 }
@@ -266,8 +398,81 @@ ul {
 
 .academic__sublist-checkbox {
   margin-right: .5rem;
+  display: none;
 }
 
+.academic__sublist-checkbox ~ span {
+  line-height: 22px;
+  flex-grow: 1;
+}
+
+.academic__sublist-checkbox input[type="checkbox"] {
+  display: none;
+}
+
+.academic__sublist-checkbox input[type="checkbox"] ~ .gg-check-r {
+  transform: scale(var(--ggs,0.7));
+  border-width: 1px;
+}
+.academic__sublist-checkbox input[type="checkbox"]:not(:checked) ~ .gg-check-r:after {
+  display: none;
+}
+
+.academic__sublist-checkbox input[type="checkbox"] ~ .gg-check-r:after {
+  left: 4px;
+  top: 0px;
+}
+
+.academic__sublist.show-checkbox .academic__sublist-checkbox {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.academic__sublist-checkbox input[type="checkbox"]:checked ~ .gg-check-r,
+.academic__sublist-checkbox input[type="checkbox"]:checked ~ span,
+.academic__sublist .academic__sublist-checkbox.checked ~ span {
+  color: #2dbe60;
+}
+
+.academic__sublist-switch {
+  margin-left: 1rem;
+  display: none;
+  position: absolute;
+  top: 16px;
+  right: 10%;
+}
+
+.academic__sublist-switch input[type="checkbox"] {
+  width: 2.2rem;
+  height: 2.2rem;
+  display: none;
+}
+
+.academic__sublist-switch input[type="checkbox"]:not(:checked) ~ .gg-check-r:after {
+  display: none;
+}
+
+.academic__sublist.active .academic__sublist-switch {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.academic__sublist.active .academic__sublist-switch strong {
+  margin-right: .5rem;
+}
+
+.academic__sublist-reset {
+  display: none;
+  position: absolute;
+  right: 27%;
+  top: 16px;
+}
+
+.academic__sublist.active.show-checkbox .academic__sublist-reset {
+  display: flex;
+}
 
 /* SETTINGS  */
 
@@ -318,24 +523,87 @@ ul {
   border: 1px solid #bdbdbd;
 }
 
-/* SETTING OF LIST  */
 
-.settings-word-list__words {
-  column-count: 4;
+/* styling dialog box */
+body.showModal {
+  /* position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; */
 }
-
-.settings-word-list__words {
-  column-gap: 50px;
+.dialogBox{
+  height:150px;
+  width:500px;
+  border:2px solid #888;
+  border-radius:.25em;
+  box-sizing:border-box;
+  border:0.1em solid #bbb;
+  background:#ecf0f1;
+  box-shadow:0 0 1em 0.1em #888;
+  position:fixed;
+  z-index:9999;
+  top:0;left:0; right:0;bottom:0;
+  margin:auto;
 }
-
-.settings-word-list__words li {
+/* creating a transparent page wrapper */
+.dialogBox::before{
+  content:"";
+  top:0;
+  left:0;
+  display:block;
+  height:100%;
+  width:100%;
+  position:fixed;
+  background:transparent;
+  z-index:-1;
+}
+/*styling dialogbox contents */
+.dialogBox {
+  padding:1em;
+  font-size:1.2em;
+ }
+.dialogBox p{
+  margin-bottom: 2.8rem;
+ }
+/* styling dialog buttons */
+.controls {
   display: flex;
+  padding: 0 1rem;
+  justify-content: flex-end;
+}
+.controls input {
+  float:right;
+  background:#27ae60;
+  color:#fff;
+  border:none;
+  padding:.5em 1em;
+  border-radius:.1em;
+  font-size:1em;
+  cursor:pointer;
+  min-width: 80px;
+}
+.controls input + input {
+  margin-left: 1rem;
+}
+.controls input:nth-child(1){
+  background:#e74c3c;
 }
 
-.settings-word-list__words li span {
-  flex-grow: 1;
-}
 
-.settings-word-list__words label {
-  margin-left: .5rem;
+/* classes used in javascript */
+.hideDialogbox{
+  display:none;
+}
+.showDialogbox,.showDialogWrap{
+  display:block;
+}
+.notification{
+  position:fixed;
+  right:0;
+  display:block;
+  border-radius:.1em;
+  color:#fff;
+  text-align:right;
+  padding:.5em;
+  background:rgb(233,49,20);
 }
