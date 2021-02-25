@@ -19,23 +19,19 @@ const settings = async () => {
     settings.sublist = document.querySelector("#sublist-selector").value;
     settings.color = document.querySelector("#color-selector").value;
     localStorage.ACADEMIC_WORDLIST_SETTINGS = JSON.stringify(settings);
-    chrome.tabs.getSelected(null, function(tab) {
-        if (tab.title === 'New tab with 570 Academic Word List') {
-          chrome.tabs.reload();
-        }
-    });
-    
-  });
-
-  document.querySelector("#settings-form").addEventListener('reset', function (e) {
-    settings.sublist = 0;
-    settings.color = "#2dbe60";
-    localStorage.ACADEMIC_WORDLIST_SETTINGS = JSON.stringify(settings);
-    chrome.tabs.getSelected(null, function(tab) {
+    chrome.tabs.getSelected(null, function (tab) {
       if (tab.title === 'New tab with 570 Academic Word List') {
         chrome.tabs.reload();
       }
+    });
+
   });
+
+  document.querySelector("#color-reset").addEventListener('click', function (e) {
+    e.preventDefault();
+    console.log(222);
+    document.querySelector("#color-selector").value = "#2dbe60";
+    settings.color = "#2dbe60";
   });
 
 };
