@@ -497,11 +497,13 @@ input:checked + .switch:active::before {
   border-radius: 5px;
   height: 30px;
   min-width: 100px;
-  color: #222;
+  color: #2c3238;
+  border: 1px solid #bdbdbd;
+  font-weight: 700;
 }
 
 .form-group--action button:hover {
-  border: 1px solid #bdbdbd;
+  border: 1px solid #2c3238;
 }
 
 .btn-color-reset {
