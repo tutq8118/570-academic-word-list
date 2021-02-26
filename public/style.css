@@ -34,6 +34,7 @@ button {
   cursor: pointer;
 }
 
+input:focus:not(:focus-visible),
 audio:focus:not(:focus-visible),
 button:focus:not(:focus-visible) {
   outline: none;
@@ -219,10 +220,16 @@ input:checked + .switch:active::before {
   font-size: 10rem;
   color: #2dbe60;
   font-weight: 900;
-  margin-top: 12rem;
+  margin-top: 6rem;
   margin-bottom: 1rem;
   border-bottom: 1px solid #bdbdbd;
   display: inline-block;
+}
+
+@media (min-width: 1920px) {
+  .academic__word {
+    margin-top: 12rem;
+  }
 }
 
 .academic__phonetics {

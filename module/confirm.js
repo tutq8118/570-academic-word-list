@@ -1,4 +1,4 @@
-const confirmShow = (messenger, yesCallback, cancelCallback) => {
+const confirmShow = (messenger = 'Are you sure?', yesCallback, cancelCallback) => {
     const confirmBox = `<div class="dialogBox" id="dialogBox">
   <p>${messenger}</p>
   <div class="controls">
@@ -15,13 +15,13 @@ const confirmShow = (messenger, yesCallback, cancelCallback) => {
       cancelButton = document.getElementById('confirm-cancel');
 
     yesButton.onclick = function () {
-      yesCallback();
+      typeof yesCallback === 'function' && yesCallback();
       dialogBox.remove();
       document.querySelector('body').classList.remove('showModal');
     };
 
     cancelButton.onclick = function () {
-      cancelCallback();
+      typeof cancelCallback === 'function' && cancelCallback();
       dialogBox.remove();
       document.querySelector('body').classList.remove('showModal');
     };
