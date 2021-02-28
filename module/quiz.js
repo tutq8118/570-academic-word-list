@@ -91,50 +91,6 @@ const quiz = async () => {
     return array;
   }
 
-  const getCircularReplacer = () => {
-    const seen = new WeakSet();
-    return (key, value) => {
-      if (typeof value === "object" && value !== null) {
-        if (seen.has(value)) {
-          return;
-        }
-        seen.add(value);
-      }
-      return value;
-    };
-  };
-
-  function isCyclic (obj) {
-    var seenObjects = [];
-  
-    function detect (obj) {
-      if (obj && typeof obj === 'object') {
-        if (seenObjects.indexOf(obj) !== -1) {
-          return true;
-        }
-        seenObjects.push(obj);
-        for (var key in obj) {
-          if (obj.hasOwnProperty(key) && detect(obj[key])) {
-            console.log(obj, 'cycle at ' + key);
-            return true;
-          }
-        }
-      }
-      return false;
-    }
-  
-    return detect(obj);
-  }
-
-  const clone = (obj) => Object.assign({}, obj);
-  const renameKey = (object, key, newKey) => {
-    const clonedObj = clone(object);
-    const targetKey = clonedObj[key];
-    delete clonedObj[key];
-    clonedObj[newKey] = targetKey;
-    return clonedObj;
-  };
-
   let quizWordList;
   let reviewList;
 
@@ -187,10 +143,10 @@ const quiz = async () => {
 
     if (JSON.parse(localStorage.QUIZ_REVIEW)[count] === undefined) {
       quizItem = `<div class='quiz__item'><h3 class="quiz__definition"><strong>${count + 1}.</strong> &ldquo;${randomdefinition}&rdquo;</h3>
-      ${ quizWords.map((e) => `<li class="quiz__answers-item" data-value=${e.word || e.wordName}><label>
-      <input type="radio" name='quiz-word' value=${e.word || e.wordName} />
+      ${ quizWords.map((e) => `<li class="quiz__answers-item" data-value=${e.word}><label>
+      <input type="radio" name='quiz-word' value=${e.word} />
       <i class="gg-radio-checked"></i>
-      <span>${e.word || e.wordName}</span>
+      <span>${e.word}</span>
     </label></li>`).join("")}</div>
       `
     } else {
