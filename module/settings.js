@@ -2,6 +2,8 @@ const settings = async () => {
   let settings = {
     color: "#2dbe60",
     sublist: "0",
+    quizSublist: "0",
+    amount: "10",
     showCheckbox: false
   };
 
@@ -24,12 +26,10 @@ const settings = async () => {
         chrome.tabs.reload();
       }
     });
-
   });
 
   document.querySelector("#color-reset").addEventListener('click', function (e) {
     e.preventDefault();
-    console.log(222);
     document.querySelector("#color-selector").value = "#2dbe60";
     settings.color = "#2dbe60";
   });

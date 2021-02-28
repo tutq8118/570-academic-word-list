@@ -24,6 +24,8 @@ const main = async () => {
     {
       color: '#2dbe60',
       sublist: '0',
+      quizSublist: "0",
+      amount: "10",
       showCheckbox: false,
     };
   const sublistSelected = parseInt(settings.sublist) > 0 ? parseInt(settings.sublist) : 0;

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Quiz</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' data: https://fonts.googleapis.com 'unsafe-inline' 'unsafe-eval'"
+    />
+    <link rel="icon" href="./public/iconx16.png">
+    <link rel="stylesheet" href="./public/style.css" />
+  </head>
+  <body>
+    <div class='quiz-settings'>
+      <form action="" id="quiz-settings-form" class="settings__form">
+        <div class="form-group">
+          <label for="">
+            Number of definitions
+          </label>
+          <select name="" id="amount-selector" class="form-control form-select">
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+            <option value="30">30</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="">
+            Sublist
+          </label>
+          <select name="" id="sublist-selector" class="form-control form-select">
+            <option value="0">All</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+          </select>
+        </div>
+        <div class="form-group form-group--action">
+          <button type="submit">Play again</button>
+        </div>
+      </form>
+    </div>
+    <div class="academic"></div>
+    <script type="module" src="quiz.js"></script>
+  </body>
+</html>
