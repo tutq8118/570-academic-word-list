@@ -34,6 +34,7 @@ button {
   cursor: pointer;
 }
 
+select:focus:not(:focus-visible),
 input:focus:not(:focus-visible),
 audio:focus:not(:focus-visible),
 button:focus:not(:focus-visible) {
@@ -482,10 +483,29 @@ input:checked + .switch:active::before {
 .form-control {
   min-width: 100px;
   min-height: 30px;
+  border: 1px solid #bdbdbd;
+  border-radius: 5px;
+  background: #fff;
 }
 
 .form-select {
   padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #bdbdbd;
+  cursor: pointer;
+}
+
+.form-control:hover,
+.form-select:hover {
+  border-color: #2c3238;
+}
+
+.form-select:active,
+.form-select:focus-visible,
+.form-select:focus-within,
+.form-select:focus {
+  border-radius: 5px 5px 0 0;
+  border-bottom: 0;
 }
 
 .form-group--action {
@@ -499,7 +519,6 @@ input:checked + .switch:active::before {
   min-width: 100px;
   color: #2c3238;
   border: 1px solid #bdbdbd;
-  font-weight: 700;
 }
 
 .form-group--action a {
@@ -646,6 +665,16 @@ body.showModal:after {
   margin: 3rem auto 0;
 }
 
+.quiz__intro {
+  text-align: left;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.quiz__request {
+  text-align: left;
+}
+
 .quiz__definition {
   margin-bottom: 3rem;
   line-height: 1.5;
@@ -666,7 +695,6 @@ body.showModal:after {
   min-width: 100px;
   color: #2c3238;
   border: 1px solid #bdbdbd;
-  font-weight: 700;
 }
 
 .quiz__footer button:hover {
@@ -781,7 +809,28 @@ body.showModal:after {
   position: fixed;
   right: 0;
   top: 0;
-  padding: 15px;
+  padding: 1rem;
+}
+
+.quiz-settings .settings__form {
+  border: 1px solid #bdbdbd;
+  padding: 1rem;
+  border-radius: .5rem;
+  margin-top: 1rem;
+}
+
+.quiz-settings .settings__form h3 {
+  text-align: center;
+  margin-top: -2.2rem;
+}
+
+.quiz-settings .settings__form h3 span {
+  padding: 0 1.5rem;
+  background: #fff;
+}
+
+.quiz-settings .settings__form .form-group:not(:last-child) {
+  margin-bottom: 1rem;
 }
 
 /* Review  */

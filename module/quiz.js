@@ -140,12 +140,35 @@ const quiz = async () => {
     const quizWords = [quizWordList[count], ...randomRest];
     shuffle(quizWords);
     const randomMeaning = getRandom(meanings, 1);
+    let randomdeExample = getRandom(randomMeaning[0].definitions, 1)[0].example;
+    let replacedWord;
+    randomdeExample ? 
+    ( 
+    randomdeExample = randomdeExample.split(' ').map(e => {
+      if (e.includes(word) || (e.substring(0, word.length - 1).includes(word.substring(0, word.length - 1)))) {
+        replacedWord = e;
+        return e.includes(',') ? '___,' : '___'
+      } else {
+        return e;
+      }
+    }).join(' ') 
+    ,
+    quizWords.map( e => {
+      if (e.word === word) {
+        e.word = replacedWord.includes(',') ? replacedWord.replace(',', '') : replacedWord;
+        return e;
+      } else {
+        return e;
+      }
+    }) 
+    )
+    : '';
     const randomdefinition = getRandom(randomMeaning[0].definitions, 1)[0].definition;
-
+    
     let quizItem;
 
     if (JSON.parse(localStorage.QUIZ_REVIEW)[count] === undefined) {
-      quizItem = `<div class='quiz__item'><h3 class="quiz__definition"><strong>${count + 1}.</strong> &ldquo;${randomdefinition}&rdquo;</h3>
+      quizItem = `<div class='quiz__item'><h3 class="quiz__definition"><strong>${count + 1}.</strong> &ldquo;${randomdeExample ? randomdeExample : randomdefinition}&rdquo;</h3>
       ${ quizWords.map((e) => `<div class="quiz__answers-item" data-value=${e.word}><label>
       <input type="radio" name='quiz-word' value=${e.word} />
       <i class="gg-radio-checked"></i>
@@ -160,7 +183,11 @@ const quiz = async () => {
       <div class="quiz">
         <div class="quiz__body">
           <h1>Quiz</h1>
-          <p>Please choose the best answer with the definition.</p>
+          <p class='quiz__intro'>All the words in this vocabulary test are from the <i>570 Academic Word List</i>, which are the most frequently used words in academic texts. You need to learn these words if you wish to pass an academic exam such as <strong>IELTS</strong>, <strong>TOEFL</strong> or <strong>PTE</strong> Academic or if you wish to study in an English speaking university. <br/><br/>
+
+          The <i>570 Academic Word List</i> is divided into 10 sublists according to frequency.</p>
+          <h3>Academic Word List Test: ${parseInt(settings.quizSublist) > 0 ? 'Sublist ' + settings.quizSublist : 'All Sublists'}</h3>
+          <p class='quiz__request'>There are ${settings.amount} questions in this quiz. Please choose the best answer by filling into the space ___ or that corresponding to the definition.</p>
           ${quizItem}
         </div>
         <div class="quiz__footer">
@@ -215,7 +242,7 @@ const quiz = async () => {
             const el = randomRest.find((e) => e.word === element.dataset.value),
             randomMeaning = getRandom(el.meanings, 1),
             randomdefinition = getRandom(randomMeaning[0].definitions, 1)[0].definition;
-            element.insertAdjacentHTML('beforeend', `<p>${randomdefinition}</p>`);
+            // element.insertAdjacentHTML('beforeend', `<p><strong>Definition:</strong> ${randomdefinition}</p>`);
             element.classList.add('quiz__answers-item--incorrect');
           }
           element.style.pointerEvents = 'none';
