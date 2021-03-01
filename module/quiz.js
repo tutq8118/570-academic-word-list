@@ -22,6 +22,9 @@ const quiz = async () => {
   let fullWordlist = JSON.parse(JSON.stringify(wordlist));
   const settings = JSON.parse(localStorage.ACADEMIC_WORDLIST_SETTINGS);
 
+  settings.quizSublist === undefined ? settings.quizSublist = '0' : '';
+  settings.amount === undefined ? settings.amount = '10' : '';
+
   const quizSublistSelected = parseInt(settings.quizSublist) > 0 ? parseInt(settings.quizSublist) : 0;
   const amountSelected = parseInt(settings.amount) > 0 ? parseInt(settings.amount) : 0;
   document.querySelector("#amount-selector").querySelector(`option[value='${amountSelected}']`).selected = 'selected';
@@ -143,11 +146,11 @@ const quiz = async () => {
 
     if (JSON.parse(localStorage.QUIZ_REVIEW)[count] === undefined) {
       quizItem = `<div class='quiz__item'><h3 class="quiz__definition"><strong>${count + 1}.</strong> &ldquo;${randomdefinition}&rdquo;</h3>
-      ${ quizWords.map((e) => `<li class="quiz__answers-item" data-value=${e.word}><label>
+      ${ quizWords.map((e) => `<div class="quiz__answers-item" data-value=${e.word}><label>
       <input type="radio" name='quiz-word' value=${e.word} />
       <i class="gg-radio-checked"></i>
       <span>${e.word}</span>
-    </label></li>`).join("")}</div>
+    </label></div>`).join("")}</div>
       `
     } else {
       quizItem = JSON.parse(localStorage.QUIZ_REVIEW)[count]; 
@@ -174,7 +177,7 @@ const quiz = async () => {
         count < amount - 1 && (document.querySelector('.btn-next').style.display = 'inline-block');
         count === amount - 1 && (document.querySelector('.btn-review').style.display = 'inline-block');
         quizWordList[count].quizDefinition = randomdefinition;
-        this.closest('li').classList.add('quiz__answers-item--selected');
+        this.closest('.quiz__answers-item').classList.add('quiz__answers-item--selected');
         if (this.value === word) {
           document.querySelector('.quiz__definition').classList.add('correct');
           (quizWordList[count].isCorrect === undefined) && item.closest('label').insertAdjacentHTML('afterbegin', `
