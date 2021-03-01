@@ -155,7 +155,7 @@ const quiz = async () => {
     ,
     quizWords.map( e => {
       if (e.word === word) {
-        e.word = replacedWord.includes(',') ? replacedWord.replace(',', '') : replacedWord;
+        e.word = replacedWord.includes(',') ? replacedWord.replace(',', '') : replacedWord; // #fixme : replacedWord undefined (financials)
         return e;
       } else {
         return e;
@@ -236,7 +236,7 @@ const quiz = async () => {
           (quizWordList[count].isCorrect === undefined) && (quizWordList[count].isCorrect = false);
         }
         document.querySelectorAll('.quiz__answers-item').forEach((element) => {
-          if (element.dataset.value === word) {
+          if (element.dataset.value.includes(word) || (element.dataset.value.substring(0, word.length - 1).includes(word.substring(0, word.length - 1)))) {
             element.classList.add('quiz__answers-item--correct');
           } else {
             const el = randomRest.find((e) => e.word === element.dataset.value),
