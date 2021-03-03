@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "570 Academic Word List",
   "description": "Revising 570 Academic Word List each time opening a new Chrome tab.",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "browser_action": {
     "default_icon": {
       "16": "/public/iconx16.png",
@@ -14,8 +14,5 @@
   "homepage_url": "https://chrome.google.com/webstore/detail/570-academic-word-list/jljehabaedafdnceghbogphpdllpnbhf?hl=en&authuser=1",
   "chrome_url_overrides": {
     "newtab": "index.html"
-  },
-  "permissions": [
-      "tabs"
-  ]
+  }
 }
