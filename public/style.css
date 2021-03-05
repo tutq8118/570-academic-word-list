@@ -358,6 +358,7 @@ input:checked + .switch:active::before {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
 
 .academic__sublist-btn {
@@ -889,6 +890,21 @@ body.showModal:after {
 .show-detail .quiz__answers-definition,
 .show-detail .quiz__answers-example {
   display: block;
+}
+
+.academic__sublist-quiz {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  right: 0;
+  font-size: 1.6rem;
+}
+
+.academic__sublist-quiz svg {
+  width: 24px;
+  height: 24px;
+  margin-right: .3rem;
+  fill: currentColor;
 }
 
 /* Review  */

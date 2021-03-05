@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
-  "name": "570 Academic Word List",
-  "description": "Revising 570 Academic Word List each time opening a new Chrome tab.",
+  "name": "Academic Word List",
+  "description": "Revising the Academic Word List each time opening a new Chrome tab.",
   "version": "1.0.4",
   "browser_action": {
     "default_icon": {

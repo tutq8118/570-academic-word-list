@@ -192,9 +192,9 @@ const quiz = async () => {
       <div class="quiz">
         <div class="quiz__body">
           <h1>Quiz</h1>
-          <p class='quiz__intro'>All the words in this vocabulary test are from the <i>570 Academic Word List</i>, which are the most frequently used words in academic texts. You need to learn these words if you wish to pass an academic exam such as <strong>IELTS</strong>, <strong>TOEFL</strong> or <strong>PTE</strong> Academic or if you wish to study in an English speaking university. <br/><br/>
+          <p class='quiz__intro'>All the words in this vocabulary test are from the <i>Academic Word List</i>. These are the 570 most frequently used words in academic texts. You need to learn these words if you wish to pass an academic exam such as <strong>IELTS</strong>, <strong>TOEFL</strong>, or <strong>PTE</strong> Academic or if you wish to study in an English-speaking university. <br/><br/>
 
-          The <i>570 Academic Word List</i> is divided into 10 sublists according to frequency.</p>
+          The <i>Academic Word List</i> is divided into 10 sublists according to the frequency.</p>
           <h3>Academic Word List Test: ${parseInt(settings.quizSublist) > 0 ? 'Sublist ' + settings.quizSublist : 'All Sublists'}</h3>
           <p class='quiz__request'>There are ${settings.amount} questions in this quiz. Please choose the best answer.</p>
           ${quizItem}
