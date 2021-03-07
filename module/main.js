@@ -20,8 +20,7 @@ const main = async () => {
   }
   let fullWordlist = JSON.parse(JSON.stringify(wordlist));
   const settings = localStorage.ACADEMIC_WORDLIST_SETTINGS ?
-    JSON.parse(localStorage.ACADEMIC_WORDLIST_SETTINGS) :
-    {
+    JSON.parse(localStorage.ACADEMIC_WORDLIST_SETTINGS) : {
       color: '#2dbe60',
       sublist: '0',
       quizSublist: "0",
@@ -37,6 +36,19 @@ const main = async () => {
   } else {
     wordlist = fullWordlist;
   }
+
+/*   // Check missing exampe, synonyms items 
+  let missingArr = [];
+  fullWordlist.forEach(item => {
+    item.meanings.forEach(meaning => {
+      meaning.definitions.forEach(definition => {
+        if (!definition.synonyms && !missingArr.includes(item)) {
+          missingArr.push(item);
+        }
+      })
+    })
+  });
+  console.log(missingArr); */
 
   const randomize = () => {
     if (showCheckbox) {
@@ -61,15 +73,16 @@ const main = async () => {
     style.appendChild(document.createTextNode(css));
   };
 
+  let currentWordIndex = randomize();
+
   let {
     word,
     phonetics,
     meanings,
     sublist
-  } = showCheckbox ? wordlist.filter((e) => e.disabled !== true)[randomize()] : wordlist[randomize()];
-
+  } = showCheckbox ? wordlist.filter((e) => e.disabled !== true)[currentWordIndex] : wordlist[currentWordIndex];
   const renderData = (word, phonetics, meanings, sublist) => {
-    const phoneticsHTML = phonetics
+    const phoneticsHTML = phonetics.slice(0, 2)
       .map(
         (e) => `
       <li class='academic__phonetics-item'>
@@ -86,7 +99,7 @@ const main = async () => {
       .map(
         (e, i) => `
       <div class="academic__meanings-item">
-        <h3 class="academic__meanings-pos"><strong>Part of speech: </strong><span>${e.partOfSpeech}</span></h3>
+        <h3 class="academic__meanings-pos"><span>${e.partOfSpeech}</span></h3>
         ${e.definitions
           .map(
             (d) => `<p class="academic__meanings-definition" style="color: ${colorSelected}"><strong><u>Definition</u>:</strong> <span>${d.definition}</span></p>
@@ -101,14 +114,22 @@ const main = async () => {
 
     const sublistHTML = wordlist
       .filter((e) => e.sublist === sublist)
-      .map((i) => `<li><label class='academic__sublist-checkbox ${i.disabled ? 'checked' : ''}'><input type='checkbox' title='Check to turn off the word on the Random' ${i.disabled ? 'checked' : ''} name='showOnRandom'></input><i class="gg-check-r"></i></label><span>${i.word}</span></li>`)
+      .map((i) => `<li><label class='academic__sublist-checkbox ${i.word === word ? 'active' : ''} ${i.disabled ? 'checked' : ''}'><input type='checkbox' ${i.disabled ? 'checked' : ''} name='showOnRandom'></input><i class="gg-check-r"></i></label><span>${i.word}</span></li>`)
       .join('');
+
+    const navButtonsHTML = `<button class='btn-nav btn-prev'>Prev</button><button class='btn-nav btn-next'>Next</button>`;
 
     document.body.innerHTML = `
     <div class='academic'>
-      <h1 class='academic__word' style="color: ${colorSelected}">
-         &ldquo;${word}&rdquo;
-      </h1>
+      <div class="academic__header">
+        <h1 class='academic__word' style="color: ${colorSelected}">
+            &ldquo;${word}&rdquo;
+        </h1>
+        <div class="academic__actions">
+            <button class="btn-favorite">Favorite</button>
+            <button class="btn-remembered">Remembered</button>
+        </div>
+      </div>
       <div class='academic__sublist ${settings.showCheckbox ? 'show-checkbox' : ''}'>
         <header>
           <h4 class='academic__sublist-title'><strong>Sublist:</strong> ${sublist} (${wordlist.filter((e) => e.sublist === sublist).length} words)</h4>
@@ -140,6 +161,9 @@ const main = async () => {
       <ul class="academic__phonetics">
         ${phoneticsHTML}
       </ul>
+      <div class="academic__nav">
+        ${navButtonsHTML}
+      </div>
       <div class="academic__meanings">
         ${meaningsHTML}
       </div>
@@ -157,7 +181,15 @@ const main = async () => {
         e.preventDefault();
         const text = this.innerText;
         const element = wordlist.find((i) => i.word === text);
-        renderData(element.word, element.phonetics, element.meanings, element.sublist);
+        currentWordIndex = wordlist.indexOf(element);
+        console.log(currentWordIndex);
+        let {
+          word,
+          phonetics,
+          meanings,
+          sublist
+        } = element;
+        renderData(word, phonetics, meanings, sublist);
       });
       item.firstElementChild.firstElementChild.addEventListener('change', function () {
         this.parentElement.classList.toggle('checked');
@@ -204,6 +236,60 @@ const main = async () => {
         }
       );
     });
+
+    function checkDisabledButtons() {
+      if (currentWordIndex === wordlist.length - 1) {
+        document.querySelector('.btn-next').classList.add('disabled');
+      } else {
+        document.querySelector('.btn-next').classList.remove('disabled');
+      }
+      if (wordlist[0].word === word) {
+        document.querySelector('.btn-prev').classList.add('disabled');
+      } else {
+        document.querySelector('.btn-prev').classList.remove('disabled');
+      }
+    }
+
+    document.querySelector('.btn-prev').addEventListener('click', function (e) {
+      e.preventDefault();
+      if (this.classList.contains('disabled')) return;
+      currentWordIndex--;
+      console.log(currentWordIndex);
+      let {
+        word,
+        phonetics,
+        meanings,
+        sublist
+      } = wordlist[currentWordIndex];
+      renderData(word, phonetics, meanings, sublist);
+    });
+    document.querySelector('.btn-next').addEventListener('click', function (e) {
+      e.preventDefault();
+      if (this.classList.contains('disabled')) return;
+      currentWordIndex++;
+      console.log(currentWordIndex);
+      let {
+        word,
+        phonetics,
+        meanings,
+        sublist
+      } = wordlist[currentWordIndex];
+      renderData(word, phonetics, meanings, sublist);
+    });
+
+    document.querySelector('.btn-remembered').addEventListener('click', function(e) {
+      e.preventDefault();
+      const totalIndex = fullWordlist.indexOf(wordlist[currentWordIndex]);
+      console.log(currentWordIndex, totalIndex);
+      if (fullWordlist[totalIndex].disabled) {
+        fullWordlist[totalIndex].disabled = false;
+      } else {
+        fullWordlist[totalIndex].disabled = true;
+      }
+      localStorage.ACADEMIC_WORDLIST = JSON.stringify(fullWordlist);
+    });
+
+    checkDisabledButtons();
   };
 
   inlineStyle();

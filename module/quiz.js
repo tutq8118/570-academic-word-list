@@ -16,11 +16,15 @@ const quiz = async () => {
     localStorage.ACADEMIC_WORDLIST = JSON.stringify(wordlist);
   }
   let fullWordlist = JSON.parse(JSON.stringify(wordlist));
-  const settings = JSON.parse(localStorage.ACADEMIC_WORDLIST_SETTINGS);
 
-  settings.quizSublist === undefined ? (settings.quizSublist = '0') : '';
-  settings.amount === undefined ? (settings.amount = '10') : '';
-  settings.showDetail === undefined ? (settings.showDetail = false) : '';
+  const settings = localStorage.ACADEMIC_WORDLIST_SETTINGS ?
+  JSON.parse(localStorage.ACADEMIC_WORDLIST_SETTINGS) : {
+    color: '#2dbe60',
+    sublist: '0',
+    quizSublist: "0",
+    amount: "10",
+    showCheckbox: false,
+  };
 
   const quizSublistSelected = parseInt(settings.quizSublist) > 0 ? parseInt(settings.quizSublist) : 0;
   const amountSelected = parseInt(settings.amount) > 0 ? parseInt(settings.amount) : 0;

@@ -339,7 +339,6 @@ input:checked + .switch:active::before {
 }
 
 .academic__sublist li {
-  cursor: pointer;
   margin-bottom: 5px;
   display: flex;
   align-items: center;
@@ -387,6 +386,14 @@ input:checked + .switch:active::before {
 .academic__sublist-checkbox ~ span {
   line-height: 22px;
   flex-grow: 1;
+  cursor: pointer;
+}
+
+.academic__sublist-checkbox.active ~ span {
+  font-weight: 700;
+  font-style: italic;
+  pointer-events: none;
+  cursor: default;
 }
 
 .academic__sublist-checkbox input[type='checkbox'] {
@@ -915,4 +922,37 @@ body.showModal:after {
 
 .btn-scroll-top {
   display: none;
+}
+
+.academic__nav {
+  position: relative;
+}
+
+.btn-nav {
+  position: absolute;
+  top: -50px;
+}
+
+.btn-nav.disabled {
+  opacity: .2;
+  cursor: default;
+  pointer-events: none;
+}
+
+.btn-prev {
+  left: 155px;
+}
+
+.btn-next {
+  right: 155px;
+}
+
+.academic__header {
+  position: relative;
+}
+
+.academic__actions {
+  position: absolute;
+  right: 0;
+  bottom: 70px;
 }
