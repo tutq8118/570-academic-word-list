@@ -1,11 +1,44 @@
-import {
-  ACADEMIC_WORDLIST_ENDPOINT
-} from './datafetching.js';
-import {
-  confirmShow
-} from './confirm.js';
+import { ACADEMIC_WORDLIST_ENDPOINT } from './datafetching.js';
+import { confirmShow } from './confirm.js';
+import { settings } from './settings.js';
 
 const main = async () => {
+  // settings =========================
+  let settings = {
+    color: '#2dbe60',
+    sublist: '0',
+    quizSublist: '0',
+    amount: '10',
+    showCheckbox: false,
+  };
+
+  if (localStorage.ACADEMIC_WORDLIST_SETTINGS) {
+    settings = JSON.parse(localStorage.ACADEMIC_WORDLIST_SETTINGS);
+  }
+
+  const sublistSelected = parseInt(settings.sublist) > 0 ? parseInt(settings.sublist) : 0;
+  const colorSelected = settings.color ? settings.color : '#2dbe60';
+  const showCheckbox = settings.showCheckbox ? settings.showCheckbox : false;
+
+  document.querySelector('#sublist-selector').getElementsByTagName('option')[sublistSelected].selected = 'selected';
+  document.querySelector('#color-selector').value = colorSelected;
+
+  document.querySelector('#settings-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    settings.sublist = document.querySelector('#sublist-selector').value;
+    settings.color = document.querySelector('#color-selector').value;
+    localStorage.ACADEMIC_WORDLIST_SETTINGS = JSON.stringify(settings);
+    chrome.tabs.reload();
+  });
+
+  document.querySelector('#color-reset').addEventListener('click', function (e) {
+    e.preventDefault();
+    document.querySelector('#color-selector').value = '#2dbe60';
+    settings.color = '#2dbe60';
+  });
+
+  //end settings ============================
+
   let wordlist;
   if (localStorage.ACADEMIC_WORDLIST) {
     wordlist = JSON.parse(localStorage.ACADEMIC_WORDLIST);
@@ -19,17 +52,6 @@ const main = async () => {
     localStorage.ACADEMIC_WORDLIST = JSON.stringify(wordlist);
   }
   let fullWordlist = JSON.parse(JSON.stringify(wordlist));
-  const settings = localStorage.ACADEMIC_WORDLIST_SETTINGS ?
-    JSON.parse(localStorage.ACADEMIC_WORDLIST_SETTINGS) : {
-      color: '#2dbe60',
-      sublist: '0',
-      quizSublist: "0",
-      amount: "10",
-      showCheckbox: false,
-    };
-  const sublistSelected = parseInt(settings.sublist) > 0 ? parseInt(settings.sublist) : 0;
-  const colorSelected = settings.color ? settings.color : '#2dbe60';
-  const showCheckbox = settings.showCheckbox ? settings.showCheckbox : false;
 
   if (sublistSelected > 0) {
     wordlist = fullWordlist.filter((e) => e.sublist === sublistSelected);
@@ -37,7 +59,7 @@ const main = async () => {
     wordlist = fullWordlist;
   }
 
-/*   // Check missing exampe, synonyms items 
+  /*   // Check missing exampe, synonyms items 
   let missingArr = [];
   fullWordlist.forEach(item => {
     item.meanings.forEach(meaning => {
@@ -75,14 +97,10 @@ const main = async () => {
 
   let currentWordIndex = randomize();
 
-  let {
-    word,
-    phonetics,
-    meanings,
-    sublist
-  } = showCheckbox ? wordlist.filter((e) => e.disabled !== true)[currentWordIndex] : wordlist[currentWordIndex];
+  let { word, phonetics, meanings, sublist } = showCheckbox ? wordlist.filter((e) => e.disabled !== true)[currentWordIndex] : wordlist[currentWordIndex];
   const renderData = (word, phonetics, meanings, sublist) => {
-    const phoneticsHTML = phonetics.slice(0, 2)
+    const phoneticsHTML = phonetics
+      .slice(0, 2)
       .map(
         (e) => `
       <li class='academic__phonetics-item'>
@@ -103,7 +121,14 @@ const main = async () => {
         ${e.definitions
           .map(
             (d) => `<p class="academic__meanings-definition" style="color: ${colorSelected}"><strong><u>Definition</u>:</strong> <span>${d.definition}</span></p>
-            ${d.example ? `<p class="academic__meanings-example"><strong><u>Example</u>:</strong> <span>${d.example.split(" ").map(w => (w.includes(word) ? `<strong><i>${w}</i></strong>` : w )).join(" ")}</span></p>` : ''}
+            ${
+              d.example
+                ? `<p class="academic__meanings-example"><strong><u>Example</u>:</strong> <span>${d.example
+                    .split(' ')
+                    .map((w) => (w.includes(word) ? `<strong><i>${w}</i></strong>` : w))
+                    .join(' ')}</span></p>`
+                : ''
+            }
         ${d.synonyms ? `<p class="academic__meanings-syn"><strong><u>Synonyms</u>:</strong> <span>${d.synonyms.map((s) => `<i>${s}</i>`).join(', ')}</span></p>` : ''}`
           )
           .join("<hr style='border-top: #eaeaea; width: 150px; margin: 3rem auto;'>")}
@@ -114,12 +139,53 @@ const main = async () => {
 
     const sublistHTML = wordlist
       .filter((e) => e.sublist === sublist)
-      .map((i) => `<li><label class='academic__sublist-checkbox ${i.word === word ? 'active' : ''} ${i.disabled ? 'checked' : ''}'><input type='checkbox' ${i.disabled ? 'checked' : ''} name='showOnRandom'></input><i class="gg-check-r"></i></label><span>${i.word}</span></li>`)
+      .map(
+        (i) => `<li data-value=${i.word}>
+      <label class='academic__sublist-checkbox ${i.word === word ? 'active' : ''} ${i.disabled ? 'checked' : ''}'>
+        <input type='checkbox' ${i.disabled ? 'checked' : ''} name=''>
+        </input>
+        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+        viewBox="0 0 512.011 512.011" style="enable-background:new 0 0 512.011 512.011;" xml:space="preserve">
+      <g>
+        <g>
+          <g>
+            <path d="M505.755,240.855l-89.088-89.088c-4.437-4.437-9.109-8.491-13.824-12.501L144.773,397.335
+              c34.432,19.328,72.789,29.227,111.232,29.227c58.197,0,116.373-22.165,160.661-66.453l89.088-89.088
+              C514.096,262.679,514.096,249.196,505.755,240.855z M256.005,362.604c-11.776,0-21.333-9.557-21.333-21.333
+              s9.557-21.333,21.333-21.333c35.285,0,64-28.715,64-64c0-11.776,9.557-21.333,21.333-21.333c11.776,0,21.333,9.557,21.333,21.333
+              C362.672,314.753,314.821,362.604,256.005,362.604z"/>
+            <path d="M95.344,151.767L6.256,240.855c-8.341,8.341-8.341,21.824,0,30.165l89.088,89.088c4.437,4.437,9.109,8.491,13.824,12.501
+              L367.237,114.54C280.688,65.921,168.901,78.188,95.344,151.767z M256.005,191.937c-35.285,0-64,28.715-64,64
+              c0,11.776-9.557,21.333-21.333,21.333s-21.333-9.557-21.333-21.333c0-58.816,47.851-106.667,106.667-106.667
+              c11.776,0,21.333,9.557,21.333,21.333S267.781,191.937,256.005,191.937z"/>
+          </g>
+        </g>
+      </g>
+      </svg>
+      </label>
+      <label class='academic__sublist-checkbox academic__sublist-checkbox--favorite ${i.word === word ? 'active' : ''} ${i.disabled ? 'checked' : ''}'>
+        <input type='checkbox' ${i.disabled ? 'checked' : ''} name=''>
+        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<g>
+	<path d="M256,34.7L235.1,45L307,190.7c3.4,6.8,10,11.6,17.5,12.7l114.2,16.7l-82.6,80.5c-5.5,5.3-8,13.1-6.7,20.6l19.5,113.6
+		l-102.1-53.7c-6.7-3.5-14.9-3.5-21.7,0l-102.1,53.7l19.5-113.6c1.3-7.5-1.2-15.3-6.7-20.6l-82.6-80.5l114.2-16.7
+		c7.5-1.1,14.1-5.9,17.5-12.7L276.9,45L256,34.7L235.1,45L256,34.7l-20.9-10.3l-66.5,134.7L19.9,180.8c-8.7,1.3-16,7.4-18.8,15.8
+		c-2.7,8.4-0.4,17.7,5.9,23.9l107.6,104.8L89.2,473.4c-1.5,8.7,2.1,17.6,9.3,22.8c7.1,5.2,16.7,5.9,24.5,1.8L256,428l133,69.9
+		c7.8,4.1,17.4,3.4,24.5-1.8c7.1-5.2,10.8-14.1,9.3-22.8l-25.4-148.1L505,220.5c6.3-6.2,8.6-15.4,5.9-23.9
+		c-2.7-8.4-10-14.6-18.8-15.8l-148.7-21.7L276.9,24.4c-3.9-7.9-12-13-20.9-13c-8.8,0-17,5.1-20.9,13L256,34.7z"/>
+</g>
+</svg>
+
+      </label>
+      <span>${i.word}</span>
+      </li>`
+      )
       .join('');
 
     const navButtonsHTML = `<button class='btn-nav btn-prev'>Prev</button><button class='btn-nav btn-next'>Next</button>`;
 
-    document.body.innerHTML = `
+    document.querySelector('.app__main').innerHTML = `
     <div class='academic'>
       <div class="academic__header">
         <h1 class='academic__word' style="color: ${colorSelected}">
@@ -140,7 +206,7 @@ const main = async () => {
               Show list of words
             </span>
           </button>
-          <button class="academic__sublist-btn academic__sublist-reset tooltip" style="visibility: ${wordlist.filter((e) => e.sublist === sublist && e.disabled === true).length > 0 ? 'visible' : 'hidden' }">
+          <button class="academic__sublist-btn academic__sublist-reset tooltip" style="visibility: ${wordlist.filter((e) => e.sublist === sublist && e.disabled === true).length > 0 ? 'visible' : 'hidden'}">
           <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="recycle" class="svg-inline--fa fa-recycle fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M184.561 261.903c3.232 13.997-12.123 24.635-24.068 17.168l-40.736-25.455-50.867 81.402C55.606 356.273 70.96 384 96.012 384H148c6.627 0 12 5.373 12 12v40c0 6.627-5.373 12-12 12H96.115c-75.334 0-121.302-83.048-81.408-146.88l50.822-81.388-40.725-25.448c-12.081-7.547-8.966-25.961 4.879-29.158l110.237-25.45c8.611-1.988 17.201 3.381 19.189 11.99l25.452 110.237zm98.561-182.915l41.289 66.076-40.74 25.457c-12.051 7.528-9 25.953 4.879 29.158l110.237 25.45c8.672 1.999 17.215-3.438 19.189-11.99l25.45-110.237c3.197-13.844-11.99-24.719-24.068-17.168l-40.687 25.424-41.263-66.082c-37.521-60.033-125.209-60.171-162.816 0l-17.963 28.766c-3.51 5.62-1.8 13.021 3.82 16.533l33.919 21.195c5.62 3.512 13.024 1.803 16.536-3.817l17.961-28.743c12.712-20.341 41.973-19.676 54.257-.022zM497.288 301.12l-27.515-44.065c-3.511-5.623-10.916-7.334-16.538-3.821l-33.861 21.159c-5.62 3.512-7.33 10.915-3.818 16.536l27.564 44.112c13.257 21.211-2.057 48.96-27.136 48.96H320V336.02c0-14.213-17.242-21.383-27.313-11.313l-80 79.981c-6.249 6.248-6.249 16.379 0 22.627l80 79.989C302.689 517.308 320 510.3 320 495.989V448h95.88c75.274 0 121.335-82.997 81.408-146.88z"></path></svg>
                       <span class="tooltiptext">Uncheck all the words</span>
                     </button>
@@ -183,12 +249,7 @@ const main = async () => {
         const element = wordlist.find((i) => i.word === text);
         currentWordIndex = wordlist.indexOf(element);
         console.log(currentWordIndex);
-        let {
-          word,
-          phonetics,
-          meanings,
-          sublist
-        } = element;
+        let { word, phonetics, meanings, sublist } = element;
         renderData(word, phonetics, meanings, sublist);
       });
       item.firstElementChild.firstElementChild.addEventListener('change', function () {
@@ -203,10 +264,22 @@ const main = async () => {
           }
         });
 
-        !fullWordlist.filter((e) => e.sublist === sublist && e.disabled === true).length ? (document.querySelector('.academic__sublist-reset').style.visibility = 'hidden') : (document.querySelector('.academic__sublist-reset').style.visibility = 'visible')
+        !fullWordlist.filter((e) => e.sublist === sublist && e.disabled === true).length ? (document.querySelector('.academic__sublist-reset').style.visibility = 'hidden') : (document.querySelector('.academic__sublist-reset').style.visibility = 'visible');
 
         localStorage.ACADEMIC_WORDLIST = JSON.stringify(fullWordlist);
       });
+    });
+
+    document.querySelector('.btn-remembered').addEventListener('click', function (e) {
+      e.preventDefault();
+      const totalIndex = fullWordlist.indexOf(wordlist[currentWordIndex]);
+      if (fullWordlist[totalIndex].disabled) {
+        fullWordlist[totalIndex].disabled = false;
+      } else {
+        fullWordlist[totalIndex].disabled = true;
+      }
+      localStorage.ACADEMIC_WORDLIST = JSON.stringify(fullWordlist);
+      document.querySelector(`.academic__sublist li[data-value=${word}]`).classList.toggle('remembered');
     });
 
     document.querySelector('.academic__sublist-btn').addEventListener('click', function (e) {
@@ -216,25 +289,22 @@ const main = async () => {
     });
 
     document.querySelector('.academic__sublist-reset').addEventListener('click', function (e) {
-      confirmShow(
-        "Are you sure to uncheck all the words?",
-        function () {
-          fullWordlist = fullWordlist.map((e) => {
-            if (e.sublist === sublist) {
-              e.disabled = false;
-              return e;
-            } else {
-              return e;
-            }
-          });
-          localStorage.ACADEMIC_WORDLIST = JSON.stringify(fullWordlist);
-          document.querySelectorAll('.academic__sublist-checkbox input[type="checkbox"]').forEach((item) => {
-            item.checked = false;
-            item.parentElement.classList.remove('checked');
-          });
-          document.querySelector('.academic__sublist-reset').style.visibility = 'hidden';
-        }
-      );
+      confirmShow('Are you sure to uncheck all the words?', function () {
+        fullWordlist = fullWordlist.map((e) => {
+          if (e.sublist === sublist) {
+            e.disabled = false;
+            return e;
+          } else {
+            return e;
+          }
+        });
+        localStorage.ACADEMIC_WORDLIST = JSON.stringify(fullWordlist);
+        document.querySelectorAll('.academic__sublist-checkbox input[type="checkbox"]').forEach((item) => {
+          item.checked = false;
+          item.parentElement.classList.remove('checked');
+        });
+        document.querySelector('.academic__sublist-reset').style.visibility = 'hidden';
+      });
     });
 
     function checkDisabledButtons() {
@@ -255,12 +325,7 @@ const main = async () => {
       if (this.classList.contains('disabled')) return;
       currentWordIndex--;
       console.log(currentWordIndex);
-      let {
-        word,
-        phonetics,
-        meanings,
-        sublist
-      } = wordlist[currentWordIndex];
+      let { word, phonetics, meanings, sublist } = wordlist[currentWordIndex];
       renderData(word, phonetics, meanings, sublist);
     });
     document.querySelector('.btn-next').addEventListener('click', function (e) {
@@ -268,25 +333,8 @@ const main = async () => {
       if (this.classList.contains('disabled')) return;
       currentWordIndex++;
       console.log(currentWordIndex);
-      let {
-        word,
-        phonetics,
-        meanings,
-        sublist
-      } = wordlist[currentWordIndex];
+      let { word, phonetics, meanings, sublist } = wordlist[currentWordIndex];
       renderData(word, phonetics, meanings, sublist);
-    });
-
-    document.querySelector('.btn-remembered').addEventListener('click', function(e) {
-      e.preventDefault();
-      const totalIndex = fullWordlist.indexOf(wordlist[currentWordIndex]);
-      console.log(currentWordIndex, totalIndex);
-      if (fullWordlist[totalIndex].disabled) {
-        fullWordlist[totalIndex].disabled = false;
-      } else {
-        fullWordlist[totalIndex].disabled = true;
-      }
-      localStorage.ACADEMIC_WORDLIST = JSON.stringify(fullWordlist);
     });
 
     checkDisabledButtons();

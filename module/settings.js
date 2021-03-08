@@ -21,11 +21,6 @@ const settings = async () => {
     settings.sublist = document.querySelector("#sublist-selector").value;
     settings.color = document.querySelector("#color-selector").value;
     localStorage.ACADEMIC_WORDLIST_SETTINGS = JSON.stringify(settings);
-    // chrome.tabs.getSelected(null, function (tab) {
-    //   if (tab.title === 'New tab with 570 Academic Word List') {
-    //     chrome.tabs.reload();
-    //   }
-    // });
   });
 
   document.querySelector("#color-reset").addEventListener('click', function (e) {
@@ -35,5 +30,4 @@ const settings = async () => {
   });
 
 };
-
-export default settings;
+export { settings } ;
