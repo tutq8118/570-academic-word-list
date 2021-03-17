@@ -10,6 +10,7 @@ const main = async () => {
     quizSublist: '0',
     amount: '10',
     showCheckbox: false,
+    showingMode: 'sublist',
   };
 
   if (localStorage.ACADEMIC_WORDLIST_SETTINGS) {
@@ -18,13 +19,18 @@ const main = async () => {
 
   const sublistSelected = parseInt(settings.sublist) > 0 ? parseInt(settings.sublist) : 0;
   const colorSelected = settings.color ? settings.color : '#2dbe60';
-  const showCheckbox = settings.showCheckbox ? settings.showCheckbox : false;
+  const showingMode = settings.showingMode ? settings.showingMode : 'sublist';
 
   document.querySelector('#sublist-selector').getElementsByTagName('option')[sublistSelected].selected = 'selected';
   document.querySelector('#color-selector').value = colorSelected;
 
+  // document.querySelector('#mode-selector').addEventListener('change', function(e) {
+  //   document.querySelector('#sublist-selector').value = '0';
+  // });
+
   document.querySelector('#settings-form').addEventListener('submit', function (e) {
     e.preventDefault();
+    settings.showingMode = document.querySelector('#mode-selector').value;
     settings.sublist = document.querySelector('#sublist-selector').value;
     settings.color = document.querySelector('#color-selector').value;
     localStorage.ACADEMIC_WORDLIST_SETTINGS = JSON.stringify(settings);
@@ -43,6 +49,8 @@ const main = async () => {
   if (localStorage.ACADEMIC_WORDLIST) {
     wordlist = JSON.parse(localStorage.ACADEMIC_WORDLIST);
   } else {
+    document.querySelector('.app__setting').style.display = 'none';
+    document.querySelector('.app__main').innerHTML = '<h3 class="app__loading">Initial Loading...</h3>';
     const res = await fetch(ACADEMIC_WORDLIST_ENDPOINT, {
       headers: {
         accept: 'application/json',
@@ -53,11 +61,17 @@ const main = async () => {
   }
   let fullWordlist = JSON.parse(JSON.stringify(wordlist));
 
-  if (sublistSelected > 0) {
-    wordlist = fullWordlist.filter((e) => e.sublist === sublistSelected);
+  if (showingMode === 'sublist') {
+    if (sublistSelected > 0) {
+      wordlist = fullWordlist.filter((e) => e.sublist === sublistSelected);
+    } else {
+      wordlist = fullWordlist;
+    }
   } else {
-    wordlist = fullWordlist;
+    wordlist = fullWordlist.filter((e) => e.disabled === true)
   }
+
+  
 
   /*   // Check missing exampe, synonyms items 
   let missingArr = [];
@@ -73,11 +87,7 @@ const main = async () => {
   console.log(missingArr); */
 
   const randomize = () => {
-    if (showCheckbox) {
-      return Math.floor(Math.random() * wordlist.filter((e) => e.disabled !== true).length);
-    } else {
       return Math.floor(Math.random() * wordlist.length);
-    }
   };
 
   const inlineStyle = () => {
@@ -97,7 +107,7 @@ const main = async () => {
 
   let currentWordIndex = randomize();
 
-  let { word, phonetics, meanings, sublist } = showCheckbox ? wordlist.filter((e) => e.disabled !== true)[currentWordIndex] : wordlist[currentWordIndex];
+  let { word, phonetics, meanings, sublist } = wordlist[currentWordIndex];
   const renderData = (word, phonetics, meanings, sublist) => {
     const phoneticsHTML = phonetics
       .slice(0, 2)
@@ -137,7 +147,7 @@ const main = async () => {
       )
       .join('');
 
-    const sublistHTML = wordlist
+    const sublistHTML = fullWordlist
       .filter((e) => e.sublist === sublist)
       .map(
         (i) => `<li data-value=${i.word}>
@@ -198,7 +208,7 @@ const main = async () => {
       </div>
       <div class='academic__sublist ${settings.showCheckbox ? 'show-checkbox' : ''}'>
         <header>
-          <h4 class='academic__sublist-title'><strong>Sublist:</strong> ${sublist} (${wordlist.filter((e) => e.sublist === sublist).length} words)</h4>
+          <h4 class='academic__sublist-title'><strong>Sublist:</strong> ${sublist} (${fullWordlist.filter((e) => e.sublist === sublist).length} words)</h4>
           <button class='academic__sublist-btn tooltip'>
             <i class="gg-list"></i>
             <i class="gg-close-r"></i>
@@ -246,8 +256,8 @@ const main = async () => {
       item.lastElementChild.addEventListener('click', function (e) {
         e.preventDefault();
         const text = this.innerText;
-        const element = wordlist.find((i) => i.word === text);
-        currentWordIndex = wordlist.indexOf(element);
+        const element = showingMode === 'sublist' ? wordlist.find((i) => i.word === text) : fullWordlist.find((i) => i.word === text);
+        currentWordIndex = showingMode === 'sublist' ? wordlist.indexOf(element) : fullWordlist.indexOf(element);
         console.log(currentWordIndex);
         let { word, phonetics, meanings, sublist } = element;
         renderData(word, phonetics, meanings, sublist);
@@ -308,15 +318,28 @@ const main = async () => {
     });
 
     function checkDisabledButtons() {
-      if (currentWordIndex === wordlist.length - 1) {
-        document.querySelector('.btn-next').classList.add('disabled');
+      if (showingMode === 'sublist' ) {
+        if (currentWordIndex === wordlist.length - 1) {
+          document.querySelector('.btn-next').classList.add('disabled');
+        } else {
+          document.querySelector('.btn-next').classList.remove('disabled');
+        }
+        if (wordlist[0].word === word) {
+          document.querySelector('.btn-prev').classList.add('disabled');
+        } else {
+          document.querySelector('.btn-prev').classList.remove('disabled');
+        }
       } else {
-        document.querySelector('.btn-next').classList.remove('disabled');
-      }
-      if (wordlist[0].word === word) {
-        document.querySelector('.btn-prev').classList.add('disabled');
-      } else {
-        document.querySelector('.btn-prev').classList.remove('disabled');
+        if (currentWordIndex === fullWordlist.length - 1) {
+          document.querySelector('.btn-next').classList.add('disabled');
+        } else {
+          document.querySelector('.btn-next').classList.remove('disabled');
+        }
+        if (fullWordlist[0].word === word) {
+          document.querySelector('.btn-prev').classList.add('disabled');
+        } else {
+          document.querySelector('.btn-prev').classList.remove('disabled');
+        }
       }
     }
 
@@ -325,7 +348,7 @@ const main = async () => {
       if (this.classList.contains('disabled')) return;
       currentWordIndex--;
       console.log(currentWordIndex);
-      let { word, phonetics, meanings, sublist } = wordlist[currentWordIndex];
+      let { word, phonetics, meanings, sublist } = showingMode === 'sublist' ? wordlist[currentWordIndex] : fullWordlist[currentWordIndex];
       renderData(word, phonetics, meanings, sublist);
     });
     document.querySelector('.btn-next').addEventListener('click', function (e) {
@@ -333,7 +356,7 @@ const main = async () => {
       if (this.classList.contains('disabled')) return;
       currentWordIndex++;
       console.log(currentWordIndex);
-      let { word, phonetics, meanings, sublist } = wordlist[currentWordIndex];
+      let { word, phonetics, meanings, sublist } = showingMode === 'sublist' ? wordlist[currentWordIndex] :  fullWordlist[currentWordIndex];
       renderData(word, phonetics, meanings, sublist);
     });
 
