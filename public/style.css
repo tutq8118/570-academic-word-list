@@ -139,6 +139,26 @@ ul {
   padding: 0 1.5rem;
 }
 
+.audio-btn {
+  background: #2dbe60;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.audio-btn:hover {
+  background: #259e52;
+}
+
+.audio-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
 .academic__meanings {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -240,10 +260,37 @@ ul {
   margin-bottom: 0;
 }
 
+.academic__sublist-select {
+  padding: 8px 16px;
+  font-size: 1.4rem;
+  font-family: 'JetBrains Mono', monospace;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  min-width: 200px;
+  color: #333;
+  font-weight: 500;
+}
+
+.academic__sublist-select:focus {
+  outline: none;
+}
+
+.academic__sublist-select option {
+  background: white;
+  padding: 8px;
+}
+
+.academic__sublist-select option:checked {
+  background: #2dbe60;
+  color: white;
+}
+
 .academic__sublist header {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 10px;
 }
 
 .academic__sublist-btn {

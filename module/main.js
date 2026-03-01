@@ -32,7 +32,9 @@ const main = async () => {
 
   const inlineStyle = () => {
     var css = `.academic__sublist ul:before {border-bottom-color: ${colorSelected};}
-    .academic__sublist.active header {color: ${colorSelected}}`,
+    .academic__sublist.active header {color: ${colorSelected}}
+    .audio-btn {background: ${colorSelected}}
+    .audio-btn:hover {background: ${colorSelected}; opacity: 0.85}`,
     head = document.head || document.getElementsByTagName('head')[0],
     style = document.createElement('style');
     head.appendChild(style);
@@ -47,15 +49,17 @@ const main = async () => {
   } = wordlist[randomize()];
 
   const renderData = (word, phonetics, meanings, sublist) => {
-    const phoneticsHTML = phonetics
+    // Filter unique IPA - keep first occurrence of each IPA
+    const uniquePhonetics = phonetics.filter((item, index, self) => 
+      index === self.findIndex((p) => p.text === item.text)
+    );
+    
+    const phoneticsHTML = uniquePhonetics
       .map(
-        (e) => `
+        (e, idx) => `
       <li class='academic__phonetics-item'>
         <p><strong>IPA:</strong><span>&nbsp;${e.text}</span></p>
-        <audio controls>
-        <source src="${e.audio}" type="audio/mpeg">
-        Your browser does not support the audio element.
-        </audio>
+        <button class="audio-btn" data-word="${word}" data-ipa="${e.text}" data-idx="${idx}">🔊 Listen</button>
       </li>
       `
       )
@@ -93,7 +97,18 @@ const main = async () => {
       )
       .join("");
 
-    const sublistHTML = wordlist.filter((e) => e.sublist === sublist).map((i) => `<li>${i.word}</li>`).join("");
+    // Generate all sublists options
+    const allSublists = [...new Set(fullWordlist.map(e => e.sublist))].sort((a, b) => a - b);
+    const currentSublist = sublist || 0;
+    const sublistOptions = allSublists.map(s => {
+      const count = fullWordlist.filter(e => e.sublist === s).length;
+      const selected = s === currentSublist ? 'selected' : '';
+      return `<option value="${s}" ${selected}>Sublist ${s} (${count} words)</option>`;
+    }).join('');
+
+    // Filter words for sublist display - if sublist is 0 (All), show all words
+    const displaySublist = currentSublist === 0 ? allSublists : [currentSublist];
+    const sublistHTML = wordlist.filter(e => displaySublist.includes(e.sublist)).map((i) => `<li>${i.word}</li>`).join("");
 
     document.body.innerHTML = `
     <div class='academic'>
@@ -102,7 +117,9 @@ const main = async () => {
       </h1>
       <div class='academic__sublist'>
         <header>
-          <h4 class='academic__sublist-title'><strong>Sublist:</strong> ${sublist} (${wordlist.filter((e) => e.sublist === sublist).length} words)</h4>
+          <select class='academic__sublist-select' id="sublistSelect">
+            ${sublistOptions}
+          </select>
           <button class='academic__sublist-btn'>
             <i class="gg-list"></i>
             <i class="gg-close-r"></i>
@@ -119,6 +136,29 @@ const main = async () => {
     </div>
   `;
 
+    // Handle sublist selection change
+    document.getElementById('sublistSelect').addEventListener('change', function(e) {
+      const selectedSublist = parseInt(e.target.value);
+      
+      // Update wordlist based on selection
+      if (selectedSublist === 0) {
+        wordlist = fullWordlist;
+      } else {
+        wordlist = fullWordlist.filter((e) => e.sublist === selectedSublist);
+      }
+      
+      // Pick new random word from filtered list
+      const newWord = wordlist[Math.floor(Math.random() * wordlist.length)];
+      renderData(newWord.word, newWord.phonetics, newWord.meanings, newWord.sublist);
+    });
+
+    // Toggle sublist visibility
+    document.querySelector('.academic__sublist-btn').addEventListener('click', function(e) {
+      e.preventDefault();
+      this.classList.toggle('active');
+      document.querySelector('.academic__sublist').classList.toggle('active');
+    });
+
     document.querySelectorAll('.academic__sublist li').forEach(item => {
       item.addEventListener('click', function (e) {
         e.preventDefault();
@@ -128,10 +168,70 @@ const main = async () => {
       });
     });
 
-    document.querySelector('.academic__sublist-btn').addEventListener('click', function(e) {
-      e.preventDefault();
-      this.classList.toggle('active');
-      document.querySelector('.academic__sublist').classList.toggle('active');
+    // Audio playback handler using Web Speech API
+    let isPlaying = false;
+    document.querySelectorAll('.audio-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const word = this.getAttribute('data-word');
+        
+        // Check if speech synthesis is available
+        if (!window.speechSynthesis) {
+          this.textContent = '❌ Not supported';
+          return;
+        }
+        
+        // If currently playing, don't allow any click
+        if (isPlaying) {
+          return;
+        }
+        
+        isPlaying = true;
+        this.textContent = '⏳ Loading...';
+        
+        const utterThis = new SpeechSynthesisUtterance(word);
+        utterThis.lang = 'en-US';
+        utterThis.rate = 0.9;
+        
+        // Try to find a good English voice
+        const voices = window.speechSynthesis.getVoices();
+        const enVoice = voices.find(v => v.lang.startsWith('en-US')) || 
+                        voices.find(v => v.lang.startsWith('en-GB')) ||
+                        voices.find(v => v.lang.startsWith('en'));
+        if (enVoice) {
+          utterThis.voice = enVoice;
+        }
+        
+        utterThis.onstart = () => {
+          this.textContent = '🔊 Playing...';
+        };
+        
+        utterThis.onend = () => {
+          this.textContent = '🔊 Listen';
+          isPlaying = false;
+        };
+        
+        utterThis.onerror = (e) => {
+          console.error('Speech error:', e);
+          this.textContent = '❌ Error';
+          isPlaying = false;
+          setTimeout(() => { this.textContent = '🔊 Listen'; }, 2000);
+        };
+        
+        // Load voices first if not available
+        if (voices.length === 0) {
+          window.speechSynthesis.addEventListener('voiceschanged', () => {
+            const updatedVoices = window.speechSynthesis.getVoices();
+            const updatedEnVoice = updatedVoices.find(v => v.lang.startsWith('en-US')) || 
+                                   updatedVoices.find(v => v.lang.startsWith('en-GB'));
+            if (updatedEnVoice) {
+              utterThis.voice = updatedEnVoice;
+            }
+            window.speechSynthesis.speak(utterThis);
+          }, { once: true });
+        } else {
+          window.speechSynthesis.speak(utterThis);
+        }
+      });
     });
 
   };
