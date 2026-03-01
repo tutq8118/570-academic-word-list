@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Known Words - 570 Academic Word List</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' data: https://fonts.googleapis.com 'unsafe-inline' 'unsafe-eval'"
+    />
+    <link rel="icon" href="./public/iconx16.png">
+    <link rel="stylesheet" href="./public/style.css" />
+  </head>
+  <body>
+    <div class="known-page" id="knownPage" hidden>
+      <h1>Known Words</h1>
+      <p class="known-count">You have learned <span id="knownCount">0</span> words</p>
+      <div class="known-list" id="knownList"></div>
+      <a href="index.html" class="back-link">&larr; Back to learning</a>
+    </div>
+    <div id="loading">Loading...</div>
+    <script type="module" src="known.js"></script>
+  </body>
+</html>

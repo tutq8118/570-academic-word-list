@@ -1,4 +1,4 @@
-import {
+﻿import {
   ACADEMIC_WORDLIST_ENDPOINT
 } from "./datafetching.js";
 
@@ -19,22 +19,40 @@ const main = async () => {
   const settings = localStorage.ACADEMIC_WORDLIST_SETTINGS ? JSON.parse(localStorage.ACADEMIC_WORDLIST_SETTINGS) : {};
   const sublistSelected = parseInt(settings.sublist) > 0 ? parseInt(settings.sublist) : 0;
   const colorSelected = settings.color ? settings.color : "#2dbe60";
-
+  const AUDIO_ICON = "\u{1F50A}";
+  const ERROR_ICON = "\u{274C}";
+  const LOADING_ICON = "\u{23F3}";
+  const AUDIO_LISTEN_LABEL = `${AUDIO_ICON} Listen`;
+  const AUDIO_PLAYING_LABEL = `${AUDIO_ICON} Playing...`;
+  const AUDIO_LOADING_LABEL = `${LOADING_ICON} Loading...`;
+  const AUDIO_NOT_SUPPORTED_LABEL = `${ERROR_ICON} Not supported`;
+  const AUDIO_ERROR_LABEL = `${ERROR_ICON} Error`;
+  
+  // Load known words from localStorage
+  let knownWords = JSON.parse(localStorage.getItem('knownWords') || '[]');
+  
+  // Filter out known words
+  const unknownWords = fullWordlist.filter(w => !knownWords.includes(w.word));
+  
+  // Use unknownWords as base, then apply sublist filter
+  let displayWordlist = unknownWords;
   if (sublistSelected > 0) {
-    wordlist = fullWordlist.filter((e) => e.sublist === sublistSelected)
-  } else {
-    wordlist = fullWordlist;
+    displayWordlist = unknownWords.filter((e) => e.sublist === sublistSelected);
   }
 
   const randomize = () => {
-    return Math.floor(Math.random() * wordlist.length);
+    return Math.floor(Math.random() * displayWordlist.length);
   };
 
   const inlineStyle = () => {
     var css = `.academic__sublist ul:before {border-bottom-color: ${colorSelected};}
     .academic__sublist.active header {color: ${colorSelected}}
     .audio-btn {background: ${colorSelected}}
-    .audio-btn:hover {background: ${colorSelected}; opacity: 0.85}`,
+    .audio-btn:hover {background: ${colorSelected}; opacity: 0.85}
+    .known-btn {color: ${colorSelected}; border-color: ${colorSelected}; background: white}
+    .known-btn:hover {background: ${colorSelected}; color: white}
+    .academic__word {color: ${colorSelected}}
+    .academic__stats a {color: ${colorSelected}}`,
     head = document.head || document.getElementsByTagName('head')[0],
     style = document.createElement('style');
     head.appendChild(style);
@@ -46,7 +64,7 @@ const main = async () => {
     phonetics,
     meanings,
     sublist
-  } = wordlist[randomize()];
+  } = displayWordlist[randomize()];
 
   const renderData = (word, phonetics, meanings, sublist) => {
     // Filter unique IPA - keep first occurrence of each IPA
@@ -59,7 +77,7 @@ const main = async () => {
         (e, idx) => `
       <li class='academic__phonetics-item'>
         <p><strong>IPA:</strong><span>&nbsp;${e.text}</span></p>
-        <button class="audio-btn" data-word="${word}" data-ipa="${e.text}" data-idx="${idx}">🔊 Listen</button>
+        <button class="audio-btn" data-word="${word}" data-ipa="${e.text}" data-idx="${idx}">${AUDIO_LISTEN_LABEL}</button>
       </li>
       `
       )
@@ -112,9 +130,16 @@ const main = async () => {
 
     document.body.innerHTML = `
     <div class='academic'>
-      <h1 class='academic__word' style="color: ${colorSelected}">
-         &ldquo;${word}&rdquo;
-      </h1>
+      <div class='academic__header'>
+        <h1 class='academic__word' style="color: ${colorSelected}">
+           &ldquo;${word}&rdquo;
+        </h1>
+        <button class="known-btn" id="knownBtn" data-word="${word}">Got it!</button>
+      </div>
+      <div class='academic__stats'>
+        <span><a href="known.html">Known: ${knownWords.length}</a></span>
+        <span>Remaining: ${unknownWords.length}</span>
+      </div>
       <div class='academic__sublist'>
         <header>
           <select class='academic__sublist-select' id="sublistSelect">
@@ -140,16 +165,35 @@ const main = async () => {
     document.getElementById('sublistSelect').addEventListener('change', function(e) {
       const selectedSublist = parseInt(e.target.value);
       
-      // Update wordlist based on selection
+      // Update wordlist based on selection (excluding known words)
       if (selectedSublist === 0) {
-        wordlist = fullWordlist;
+        displayWordlist = unknownWords;
       } else {
-        wordlist = fullWordlist.filter((e) => e.sublist === selectedSublist);
+        displayWordlist = unknownWords.filter((e) => e.sublist === selectedSublist);
       }
       
       // Pick new random word from filtered list
-      const newWord = wordlist[Math.floor(Math.random() * wordlist.length)];
+      const newWord = displayWordlist[Math.floor(Math.random() * displayWordlist.length)];
       renderData(newWord.word, newWord.phonetics, newWord.meanings, newWord.sublist);
+    });
+
+    // Handle "Mark as known" button
+    document.getElementById('knownBtn').addEventListener('click', function() {
+      const wordToMark = this.getAttribute('data-word');
+      
+      // Add to known words
+      if (!knownWords.includes(wordToMark)) {
+        knownWords.push(wordToMark);
+        localStorage.setItem('knownWords', JSON.stringify(knownWords));
+      }
+      
+      // Show next word
+      if (displayWordlist.length > 1) {
+        const newWord = displayWordlist[Math.floor(Math.random() * displayWordlist.length)];
+        renderData(newWord.word, newWord.phonetics, newWord.meanings, newWord.sublist);
+      } else {
+        alert('Congratulations! You have learned all words in this list!');
+      }
     });
 
     // Toggle sublist visibility
@@ -176,7 +220,7 @@ const main = async () => {
         
         // Check if speech synthesis is available
         if (!window.speechSynthesis) {
-          this.textContent = '❌ Not supported';
+          this.textContent = AUDIO_NOT_SUPPORTED_LABEL;
           return;
         }
         
@@ -186,7 +230,7 @@ const main = async () => {
         }
         
         isPlaying = true;
-        this.textContent = '⏳ Loading...';
+        this.textContent = AUDIO_LOADING_LABEL;
         
         const utterThis = new SpeechSynthesisUtterance(word);
         utterThis.lang = 'en-US';
@@ -202,19 +246,19 @@ const main = async () => {
         }
         
         utterThis.onstart = () => {
-          this.textContent = '🔊 Playing...';
+          this.textContent = AUDIO_PLAYING_LABEL;
         };
         
         utterThis.onend = () => {
-          this.textContent = '🔊 Listen';
+          this.textContent = AUDIO_LISTEN_LABEL;
           isPlaying = false;
         };
         
         utterThis.onerror = (e) => {
           console.error('Speech error:', e);
-          this.textContent = '❌ Error';
+          this.textContent = AUDIO_ERROR_LABEL;
           isPlaying = false;
-          setTimeout(() => { this.textContent = '🔊 Listen'; }, 2000);
+          setTimeout(() => { this.textContent = AUDIO_LISTEN_LABEL; }, 2000);
         };
         
         // Load voices first if not available
